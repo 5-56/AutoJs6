@@ -37,6 +37,7 @@ import org.autojs.autojs.util.ViewUtils
 import org.autojs.autojs6.BuildConfig
 import org.autojs.autojs6.R
 import org.greenrobot.eventbus.EventBus
+import org.autojs.autojs.agent.AgentManager
 import java.lang.ref.WeakReference
 import java.lang.reflect.Method
 
@@ -47,6 +48,9 @@ import java.lang.reflect.Method
 class App : MultiDexApplication() {
 
     lateinit var dynamicBroadcastReceivers: DynamicBroadcastReceivers
+        private set
+    
+    lateinit var agentManager: AgentManager
         private set
 
     lateinit var devPluginService: DevPluginService
@@ -69,6 +73,9 @@ class App : MultiDexApplication() {
         TimedTaskScheduler.init(this)
         initDynamicBroadcastReceivers()
         Toaster.init(this)
+        
+        // 初始化Agent系统
+        initAgentSystem()
 
         setUpDefaultNightMode()
     }
@@ -148,6 +155,11 @@ class App : MultiDexApplication() {
                 }
             }, { it.printStackTrace() })
 
+    }
+
+    private fun initAgentSystem() {
+        agentManager = AgentManager.getInstance(this)
+        agentManager.initialize()
     }
 
     private fun setupDrawableImageLoader() {
