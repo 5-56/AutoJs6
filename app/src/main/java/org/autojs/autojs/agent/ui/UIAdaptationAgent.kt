@@ -19,6 +19,8 @@ class UIAdaptationAgent(
     companion object {
         const val AGENT_ID = "ui_adaptation_agent"
     }
+    
+    override val agentId: String = AGENT_ID
 
     override fun getStatus(): AgentStatus {
         return AgentStatus(

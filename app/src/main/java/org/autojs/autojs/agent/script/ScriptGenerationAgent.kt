@@ -19,6 +19,8 @@ class ScriptGenerationAgent(
     companion object {
         const val AGENT_ID = "script_generation_agent"
     }
+    
+    override val agentId: String = AGENT_ID
 
     override fun getStatus(): AgentStatus {
         return AgentStatus(

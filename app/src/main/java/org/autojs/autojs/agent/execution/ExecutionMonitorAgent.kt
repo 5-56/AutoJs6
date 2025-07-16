@@ -19,6 +19,8 @@ class ExecutionMonitorAgent(
     companion object {
         const val AGENT_ID = "execution_monitor_agent"
     }
+    
+    override val agentId: String = AGENT_ID
 
     override fun getStatus(): AgentStatus {
         return AgentStatus(

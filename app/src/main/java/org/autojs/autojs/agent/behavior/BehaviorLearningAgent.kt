@@ -19,6 +19,8 @@ class BehaviorLearningAgent(
     companion object {
         const val AGENT_ID = "behavior_learning_agent"
     }
+    
+    override val agentId: String = AGENT_ID
 
     override fun getStatus(): AgentStatus {
         return AgentStatus(

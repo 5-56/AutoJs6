@@ -19,6 +19,8 @@ class DialogAgent(
     companion object {
         const val AGENT_ID = "dialog_agent"
     }
+    
+    override val agentId: String = AGENT_ID
 
     override fun getStatus(): AgentStatus {
         return AgentStatus(
