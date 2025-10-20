@@ -77,10 +77,39 @@ class AIProviderSettingsActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 currentProvider = AIProvider.values()[position]
                 onProviderChanged()
+                // 显示帮助信息
+                showProviderHelp()
             }
             
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+    
+    private fun showProviderHelp() {
+        val helpInfo = com.xihe.automation.util.AIProviderQuickConfig.getProviderHelp(currentProvider)
+        
+        val helpText = buildString {
+            appendLine("📋 ${helpInfo.name}")
+            appendLine()
+            appendLine("💡 获取API密钥:")
+            appendLine(helpInfo.apiKeyGuide)
+            appendLine()
+            if (helpInfo.recommendedModels.isNotEmpty()) {
+                appendLine("🌟 推荐模型:")
+                helpInfo.recommendedModels.forEach {
+                    appendLine("  • $it")
+                }
+                appendLine()
+            }
+            appendLine("✨ 特性:")
+            helpInfo.features.forEach {
+                appendLine("  $it")
+            }
+            appendLine()
+            appendLine("💬 ${helpInfo.notes}")
+        }
+        
+        statusText.text = helpText
     }
     
     private fun setupListeners() {
