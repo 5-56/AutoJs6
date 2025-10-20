@@ -3,6 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_quick_actions"
+        android:title="快速操作"
+        android:icon="@drawable/ic_play"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_script_templates"
+        android:title="脚本模板"
+        android:icon="@drawable/ic_script"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_clear_chat"
         android:title="@string/action_clear_chat"
         android:icon="@drawable/ic_clear"

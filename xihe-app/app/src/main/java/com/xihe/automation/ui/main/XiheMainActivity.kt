@@ -57,6 +57,16 @@ class XiheMainActivity : AppCompatActivity() {
         // 显示欢迎消息
         viewModel.addWelcomeMessage()
     }
+    
+    override fun onResume() {
+        super.onResume()
+        
+        // 刷新AI提供商状态显示
+        binding.aiProviderStatus.refresh()
+        
+        // 首次启动显示欢迎引导
+        com.xihe.automation.ui.components.WelcomeGuideDialog.showIfNeeded(this)
+    }
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
@@ -189,6 +199,14 @@ class XiheMainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_quick_actions -> {
+                showQuickActionsDialog()
+                true
+            }
+            R.id.action_script_templates -> {
+                showScriptTemplatesDialog()
+                true
+            }
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
@@ -212,6 +230,21 @@ class XiheMainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showQuickActionsDialog() {
+        com.xihe.automation.ui.components.QuickActionsDialog(this) { promptText ->
+            binding.inputMessage.setText(promptText)
+            sendMessage()
+        }.show()
+    }
+    
+    private fun showScriptTemplatesDialog() {
+        com.xihe.automation.ui.components.ScriptTemplatesDialog(this) { template ->
+            // 插入模板到输入框
+            binding.inputMessage.setText("使用这个脚本模板：\n${template.name}\n\n```javascript\n${template.script}\n```")
+            Toast.makeText(this, "模板已插入，你可以修改后发送", Toast.LENGTH_SHORT).show()
+        }.show()
+    }
+    
     private fun showAboutDialog() {
         AlertDialog.Builder(this)
             .setTitle("关于羲和")
@@ -224,10 +257,13 @@ class XiheMainActivity : AppCompatActivity() {
                 通过AI智能生成和优化自动化脚本
                 
                 主要功能:
+                • 8个AI提供商（多个免费）
+                • 实时获取模型列表
                 • AI聊天交互
                 • 自动脚本生成
                 • 屏幕内容识别
                 • 智能脚本优化
+                • 快速操作和模板
                 • 全流程AI接管
             """.trimIndent())
             .setPositiveButton("确定", null)

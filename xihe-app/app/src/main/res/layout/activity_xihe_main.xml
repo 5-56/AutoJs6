@@ -26,6 +26,15 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- AI提供商状态显示 -->
+        <com.xihe.automation.ui.main.AIProviderStatusView
+            android:id="@+id/aiProviderStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp" />
+
         <!-- 聊天消息列表 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewChat"
