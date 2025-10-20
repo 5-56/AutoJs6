@@ -28,6 +28,7 @@ class ChatActivity : AppCompatActivity() {
             "openrouter" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.OpenRouterClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://openrouter.ai/api") else NoopLlmClient()
             "kimi" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.KimiClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://api.moonshot.cn") else NoopLlmClient()
             "zhipu" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.ZhipuClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://open.bigmodel.cn/api") else NoopLlmClient()
+            "google" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.GoogleClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://generativelanguage.googleapis.com") else NoopLlmClient()
             else -> NoopLlmClient()
         }
         AgentOrchestrator(llm, runtime, tools)
@@ -93,7 +94,7 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        // Long click to run closed-loop with given goal
+        // Long click to run closed-loop with given goal (3 iters)
         send.setOnLongClickListener {
             val goal = input.text?.toString().orEmpty().trim()
             if (goal.isNotEmpty()) {

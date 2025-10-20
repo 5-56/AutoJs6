@@ -39,8 +39,8 @@ class AgentOrchestrator(
                     appendLine("截图: ${if (bmp != null) "captured" else "null"}")
                 }
                 val messages = listOf(
-                    LlmClient.Message(LlmClient.Message.Role.System, "你是脚本助手。根据观察数据，提供最小必要修改的脚本全文。"),
-                    LlmClient.Message(LlmClient.Message.Role.User, "目标: $goal\n观察: $obs\n当前脚本:\n$script"),
+                    LlmClient.Message(LlmClient.Message.Role.System, "你是Android自动化脚本助手。只能使用项目内已存在API与能力，产出最小必要修改的完整JS脚本。"),
+                    LlmClient.Message(LlmClient.Message.Role.User, "目标: $goal\n观察(日志/OCR/无障碍/截图情况摘要):\n$obs\n\n当前脚本全文:\n$script\n\n请仅返回新脚本全文，不要解释。"),
                 )
                 val ai = llm.chat(messages).joinToString("\n") { it.content }
                 onUpdate(ai)
