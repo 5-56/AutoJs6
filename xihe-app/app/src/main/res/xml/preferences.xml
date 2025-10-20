@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/settings_ai_api">
+
+        <EditTextPreference
+            android:key="ai_api_key"
+            android:title="@string/settings_ai_api_key"
+            android:summary="请输入您的AI API密钥"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="ai_api_url"
+            android:title="@string/settings_ai_api_url"
+            android:summary="请输入AI API的URL"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_general">
+
+        <ListPreference
+            android:key="theme"
+            android:title="@string/settings_theme"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="system"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="language"
+            android:title="@string/settings_language"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:defaultValue="zh"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
