@@ -229,6 +229,20 @@
     <string name="url_github_autojs6_issues" translatable="false">&url_github_autojs6;/issues</string>
     <string name="url_github_autojs6_vscode_extension_repo" translatable="false">&url_github_autojs6_vscode_extension;</string>
     <string name="url_github_autojs6_vscode_extension_usage" translatable="false">&url_github_autojs6_vscode_extension;/#%E4%BD%BF%E7%94%A8-usage</string>
+    <string-array name="xihe_llm_providers">
+        <item>Google</item>
+        <item>DeepSeek</item>
+        <item>Kimi</item>
+        <item>OpenRouter</item>
+        <item>智谱</item>
+    </string-array>
+    <string-array name="xihe_llm_provider_values">
+        <item>google</item>
+        <item>deepseek</item>
+        <item>kimi</item>
+        <item>openrouter</item>
+        <item>zhipu</item>
+    </string-array>
     <string name="value_app_language_default" translatable="false">@string/value_app_language_follow_system</string>
     <string name="value_app_language_english" translatable="false">EN</string>
     <string name="value_app_language_follow_system" translatable="false">Auto</string>
