@@ -25,7 +25,9 @@ class ChatActivity : AppCompatActivity() {
         val cfg = Providers.read(this)
         val llm = when (cfg.provider) {
             "deepseek" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) DeepSeekClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://api.deepseek.com") else NoopLlmClient()
-            "openrouter" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) OpenAiClient(cfg.baseUrl ?: "https://openrouter.ai/api", cfg.apiKey, cfg.model) else NoopLlmClient()
+            "openrouter" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.OpenRouterClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://openrouter.ai/api") else NoopLlmClient()
+            "kimi" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.KimiClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://api.moonshot.cn") else NoopLlmClient()
+            "zhipu" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) org.autojs.autojs.ai.llm.ZhipuClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://open.bigmodel.cn/api") else NoopLlmClient()
             else -> NoopLlmClient()
         }
         AgentOrchestrator(llm, runtime, tools)
