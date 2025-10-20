@@ -8,10 +8,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.autojs.autojs.R
 import org.autojs.autojs.ai.llm.NoopLlmClient
 import org.autojs.autojs.ai.orchestrator.AgentOrchestrator
+import org.autojs.autojs.ai.orchestrator.DefaultToolBridge
+import org.autojs.autojs.runtime.ScriptRuntime
 
 class ChatActivity : AppCompatActivity() {
     private val adapter: ChatAdapter by lazy { ChatAdapter(mutableListOf()) }
-    private val orchestrator by lazy { AgentOrchestrator(NoopLlmClient()) }
+    private val orchestrator by lazy {
+        // Attach runtime & tools when available
+        val runtime = try { org.autojs.autojs.AutoJs.instance.scriptRuntime } catch (_: Throwable) { null }
+        val tools = runtime?.let { DefaultToolBridge(it) }
+        AgentOrchestrator(NoopLlmClient(), runtime, tools)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

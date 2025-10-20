@@ -18,6 +18,10 @@ interface ToolBridge {
     suspend fun screenshot(region: Rect? = null): Bitmap?
     suspend fun ocr(bitmap: Bitmap): List<OcrBox>
     suspend fun accessibilityTree(maxDepth: Int = 6): String
+    // Basic actions
+    suspend fun tap(x: Int, y: Int): Boolean
+    suspend fun swipe(x1: Int, y1: Int, x2: Int, y2: Int, durationMs: Int = 300): Boolean
+    suspend fun inputTextById(viewId: String, text: String): Boolean
 }
 
 data class OcrBox(val text: String, val conf: Float, val left: Int, val top: Int, val right: Int, val bottom: Int)
@@ -80,5 +84,32 @@ class DefaultToolBridge(private val runtime: ScriptRuntime) : ToolBridge {
         for (i in 0 until node.childCount) {
             node.getChild(i)?.let { serializeNode(it, depth + 1, maxDepth) }
         }
+    }
+
+    override suspend fun tap(x: Int, y: Int): Boolean {
+        return try {
+            val bridge = org.autojs.autojs.core.accessibility.AccessibilityBridgeImpl(runtime.appContext)
+            val automator = org.autojs.autojs.core.accessibility.SimpleActionAutomator(bridge, runtime)
+            automator.click(x, y)
+            true
+        } catch (_: Throwable) { false }
+    }
+
+    override suspend fun swipe(x1: Int, y1: Int, x2: Int, y2: Int, durationMs: Int): Boolean {
+        return try {
+            val bridge = org.autojs.autojs.core.accessibility.AccessibilityBridgeImpl(runtime.appContext)
+            val automator = org.autojs.autojs.core.accessibility.SimpleActionAutomator(bridge, runtime)
+            automator.swipe(x1, y1, x2, y2, durationMs)
+            true
+        } catch (_: Throwable) { false }
+    }
+
+    override suspend fun inputTextById(viewId: String, text: String): Boolean {
+        return try {
+            val bridge = org.autojs.autojs.core.accessibility.AccessibilityBridgeImpl(runtime.appContext)
+            val automator = org.autojs.autojs.core.accessibility.SimpleActionAutomator(bridge, runtime)
+            automator.setText(automator.id(viewId), text)
+            true
+        } catch (_: Throwable) { false }
     }
 }
