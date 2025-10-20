@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="xihe_llm_base_url"
+        android:title="LLM Base URL"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="Base URL" />
+
+    <EditTextPreference
+        android:key="xihe_llm_api_key"
+        android:title="LLM API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="API Key" />
+
+    <EditTextPreference
+        android:key="xihe_llm_model"
+        android:title="LLM Model"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="Model"
+        android:defaultValue="gpt-4o-mini" />
+</PreferenceScreen>

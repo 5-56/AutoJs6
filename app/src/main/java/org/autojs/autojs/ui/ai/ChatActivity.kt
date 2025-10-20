@@ -47,5 +47,25 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Long click to run closed-loop with given goal
+        send.setOnLongClickListener {
+            val goal = input.text?.toString().orEmpty().trim()
+            if (goal.isNotEmpty()) {
+                input.setText("")
+                adapter.add(ChatAdapter.ChatMessage(true, "[AI 闭环] $goal"))
+                orchestrator.runClosedLoopScript(
+                    initialScript = "",
+                    goal = goal,
+                    maxIters = 3
+                ) { update ->
+                    runOnUiThread {
+                        adapter.add(ChatAdapter.ChatMessage(false, update))
+                        rv.scrollToPosition(adapter.itemCount - 1)
+                    }
+                }
+            }
+            true
+        }
     }
 }
