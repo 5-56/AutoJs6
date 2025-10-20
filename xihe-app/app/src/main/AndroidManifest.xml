@@ -68,6 +68,11 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:theme="@style/Theme.Xihe" />
+        
+        <!-- AI提供商设置 -->
+        <activity
+            android:name=".ui.settings.AIProviderSettingsActivity"
+            android:theme="@style/Theme.Xihe" />
 
         <!-- 无障碍服务 -->
         <service

@@ -1,7 +1,12 @@
 package com.xihe.automation.ai
 
+import android.content.Context
 import com.google.gson.Gson
 import com.xihe.automation.BuildConfig
+import com.xihe.automation.XiheApplication
+import com.xihe.automation.ai.provider.AIProviderConfig
+import com.xihe.automation.ai.provider.ChatMessage
+import com.xihe.automation.ai.provider.UniversalAIClient
 import com.xihe.automation.data.model.ScreenAnalysis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,20 +20,16 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
- * AI脚本生成器（使用真实AI API + AutoJs6 API）
+ * AI脚本生成器（支持多提供商）
  * 根据用户需求和屏幕分析结果生成AutoJs6脚本
  */
-class AIScriptGenerator {
+class AIScriptGenerator(context: Context = XiheApplication.getContext()) {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .build()
-    
-    private val conversationHistory = mutableListOf<Pair<String, String>>()
+    private val providerConfig = AIProviderConfig.getInstance(context)
+    private val conversationHistory = mutableListOf<ChatMessage>()
 
     /**
-     * 根据用户需求生成脚本（智能版）
+     * 根据用户需求生成脚本（智能版 - 支持多提供商）
      */
     suspend fun generateScript(userIntent: String, screenAnalysis: ScreenAnalysis? = null): String = 
         withContext(Dispatchers.IO) {
@@ -39,16 +40,20 @@ class AIScriptGenerator {
                 ""
             }
             
+            // 检查当前提供商配置
+            val currentProvider = providerConfig.getCurrentProvider()
+            val isConfigured = providerConfig.isConfigured(currentProvider)
+            
             // 尝试使用AI生成
-            if (BuildConfig.AI_API_KEY.isNotEmpty() && BuildConfig.AI_API_URL.isNotEmpty()) {
+            if (isConfigured) {
                 try {
-                    generateWithAI(userIntent, context)
+                    generateWithUniversalAI(userIntent, context)
                 } catch (e: Exception) {
-                    Timber.w(e, "AI生成失败，使用后备方案")
+                    Timber.w(e, "AI生成失败（${currentProvider.displayName}），使用后备方案")
                     buildScript(userIntent, screenAnalysis)
                 }
             } else {
-                // 使用智能后备方案
+                Timber.i("AI未配置，使用智能后备方案")
                 buildScript(userIntent, screenAnalysis)
             }
         } catch (e: Exception) {
@@ -58,8 +63,78 @@ class AIScriptGenerator {
     }
     
     /**
-     * 使用AI API生成脚本
+     * 使用通用AI客户端生成脚本（支持多提供商）
      */
+    private suspend fun generateWithUniversalAI(userIntent: String, context: String): String {
+        val currentProvider = providerConfig.getCurrentProvider()
+        val apiKey = providerConfig.getApiKey(currentProvider)
+        val baseUrl = providerConfig.getBaseUrl(currentProvider)
+        val model = providerConfig.getSelectedModel(currentProvider)
+        
+        Timber.i("使用 ${currentProvider.displayName} - $model 生成脚本")
+        
+        val client = UniversalAIClient(currentProvider, apiKey, baseUrl, model)
+        
+        val systemPrompt = """
+你是AutoJs6脚本专家。请根据用户需求和屏幕信息生成可执行的JavaScript脚本。
+
+AutoJs6可用API:
+- auto() - 启用无障碍服务（必须）
+- click(x, y) - 点击坐标
+- press(x, y, duration) - 长按
+- swipe(x1, y1, x2, y2, duration) - 滑动
+- text("文本").findOne(timeout) - 查找文本控件
+- textContains("文本").findOne(timeout) - 模糊匹配文本
+- id("id").findOne(timeout) - 查找ID
+- className("类名").findOne(timeout) - 查找类名
+- desc("描述").findOne(timeout) - 查找描述
+- clickable(true).find() - 查找可点击控件
+- element.click() - 点击控件
+- element.setText("文本") - 设置文本
+- element.bounds() - 获取边界
+- sleep(ms) - 等待
+- toast("消息") - 显示提示
+- requestScreenCapture() - 请求截图权限
+- exit() - 退出脚本
+
+注意事项:
+1. 必须以auto()开始
+2. 使用真实的AutoJs6 API
+3. 添加适当的sleep等待
+4. 添加错误处理
+5. 使用toast显示状态
+6. 只生成JavaScript代码，不要markdown标记
+
+根据屏幕信息优先选择最准确的选择器。
+        """.trimIndent()
+        
+        // 构建消息列表
+        val messages = mutableListOf<ChatMessage>()
+        
+        // 添加历史对话
+        messages.addAll(conversationHistory.takeLast(5))
+        
+        // 添加当前请求
+        messages.add(ChatMessage(
+            role = "user",
+            content = "$context\n\n用户需求: $userIntent\n\n请生成AutoJs6脚本:"
+        ))
+        
+        // 调用AI
+        val aiResponse = client.chat(messages, systemPrompt)
+        
+        // 保存对话历史
+        conversationHistory.add(ChatMessage("user", userIntent))
+        conversationHistory.add(ChatMessage("assistant", aiResponse))
+        
+        // 提取脚本
+        return extractScript(aiResponse)
+    }
+    
+    /**
+     * 使用AI API生成脚本（旧方法 - 保留用于备用）
+     */
+    @Deprecated("使用generateWithUniversalAI代替")
     private suspend fun generateWithAI(userIntent: String, context: String): String {
         val systemPrompt = """
 你是AutoJs6脚本专家。请根据用户需求和屏幕信息生成可执行的JavaScript脚本。
