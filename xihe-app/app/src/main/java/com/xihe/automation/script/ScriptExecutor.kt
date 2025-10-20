@@ -1,6 +1,13 @@
 package com.xihe.automation.script
 
+import com.xihe.automation.autojs.execution.ExecutionConfig
+import com.xihe.automation.autojs.execution.ScriptExecution
+import com.xihe.automation.autojs.runtime.ScriptRuntime
 import com.xihe.automation.data.model.ScriptExecutionResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
 import org.mozilla.javascript.ScriptableObject
@@ -9,13 +16,74 @@ import java.io.StringWriter
 import java.io.PrintWriter
 
 /**
- * 脚本执行器
+ * 脚本执行器（集成AutoJs6真实功能）
  * 负责执行JavaScript脚本
  */
 class ScriptExecutor {
 
     /**
-     * 执行脚本
+     * 使用AutoJs6执行脚本（真实执行）
+     */
+    suspend fun executeWithAutoJs(script: String, runtime: ScriptRuntime): ScriptExecutionResult = 
+        withContext(Dispatchers.IO) {
+        val startTime = System.currentTimeMillis()
+        
+        return@withContext try {
+            Timber.i("使用AutoJs6引擎执行脚本")
+            
+            // 创建执行配置
+            val config = ExecutionConfig().apply {
+                workingDirectory = runtime.files.path()
+                delay = 0
+            }
+            
+            // 使用AutoJs6的脚本引擎执行
+            val execution: ScriptExecution = runtime.engines.execution()
+                .execute(script, "AI-Generated-Script", config)
+            
+            // 等待执行完成（最多60秒）
+            var timeoutCount = 0
+            while (execution.engine?.isAlive == true && timeoutCount < 600) {
+                delay(100)
+                timeoutCount++
+            }
+            
+            val executionTime = System.currentTimeMillis() - startTime
+            
+            // 检查是否有异常
+            val exception = execution.exception
+            
+            if (exception != null) {
+                Timber.e(exception, "脚本执行异常")
+                ScriptExecutionResult(
+                    success = false,
+                    error = exception.message ?: "未知错误",
+                    executionTime = executionTime
+                )
+            } else {
+                Timber.i("脚本执行成功，耗时: ${executionTime}ms")
+                ScriptExecutionResult(
+                    success = true,
+                    output = "执行完成",
+                    executionTime = executionTime
+                )
+            }
+            
+        } catch (e: Exception) {
+            val executionTime = System.currentTimeMillis() - startTime
+            Timber.e(e, "脚本执行失败")
+            
+            ScriptExecutionResult(
+                success = false,
+                error = e.message ?: "执行失败",
+                output = e.stackTraceToString(),
+                executionTime = executionTime
+            )
+        }
+    }
+
+    /**
+     * 基础Rhino执行（备用方案）
      */
     fun execute(script: String): ScriptExecutionResult {
         val startTime = System.currentTimeMillis()

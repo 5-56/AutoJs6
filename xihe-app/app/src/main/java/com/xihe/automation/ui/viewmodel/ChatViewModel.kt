@@ -4,20 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xihe.automation.ai.AIConversationManager
-import com.xihe.automation.ai.AIScriptGenerator
-import com.xihe.automation.ai.ScreenAnalyzer
+import com.xihe.automation.ai.XiheAIEngine
 import com.xihe.automation.data.model.ChatMessage
 import com.xihe.automation.data.model.MessageType
-import com.xihe.automation.script.ScriptExecutor
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.Date
 
 /**
- * 聊天界面的ViewModel
+ * 聊天界面的ViewModel（集成AutoJs6真实功能）
  */
 class ChatViewModel : ViewModel() {
 
@@ -30,10 +25,7 @@ class ChatViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    private val conversationManager = AIConversationManager()
-    private val scriptGenerator = AIScriptGenerator()
-    private val screenAnalyzer = ScreenAnalyzer()
-    private val scriptExecutor = ScriptExecutor()
+    private val aiEngine = XiheAIEngine.getInstance()
 
     fun addWelcomeMessage() {
         val welcomeMessage = ChatMessage(
@@ -72,34 +64,22 @@ class ChatViewModel : ViewModel() {
         _isLoading.value = true
 
         try {
-            // 发送给AI处理
-            val response = conversationManager.sendMessage(content)
+            Timber.i("处理用户消息: $content")
             
-            // 添加AI回复
-            val aiMessage = ChatMessage(
-                content = response.message,
-                type = MessageType.AI,
-                timestamp = Date()
-            )
-            addMessage(aiMessage)
-
-            // 如果AI生成了脚本，显示脚本并询问是否执行
-            if (response.hasScript) {
-                val scriptMessage = ChatMessage(
-                    content = "我已经生成了以下脚本：\n\n```javascript\n${response.script}\n```\n\n是否立即执行？",
-                    type = MessageType.SCRIPT,
-                    timestamp = Date(),
-                    scriptContent = response.script
-                )
-                addMessage(scriptMessage)
+            // 使用XiheAIEngine处理（完整流程：分析->生成->执行->优化）
+            val processResult = aiEngine.processUserMessage(content)
+            
+            // 添加所有生成的消息（包括分析、脚本、执行结果）
+            processResult.messages.forEach { message ->
+                addMessage(message)
             }
 
         } catch (e: Exception) {
-            Timber.e(e, "发送消息失败")
-            _errorMessage.value = "发送失败: ${e.message}"
+            Timber.e(e, "处理消息失败")
+            _errorMessage.value = "处理失败: ${e.message}"
             
             val errorMessage = ChatMessage(
-                content = "抱歉，处理您的请求时出现了错误。请稍后重试。",
+                content = "抱歉，处理您的请求时出现了错误。\n\n错误信息: ${e.message}\n\n请检查：\n1. 无障碍服务是否启用\n2. 网络连接是否正常\n3. API密钥是否配置",
                 type = MessageType.AI,
                 timestamp = Date()
             )
@@ -113,50 +93,34 @@ class ChatViewModel : ViewModel() {
         _isLoading.value = true
         
         try {
-            val systemMessage = ChatMessage(
-                content = "正在捕获并分析屏幕...",
-                type = MessageType.SYSTEM,
-                timestamp = Date()
-            )
-            addMessage(systemMessage)
-
-            // 捕获屏幕
-            val screenshot = withContext(Dispatchers.IO) {
-                screenAnalyzer.captureScreen()
+            Timber.i("开始屏幕分析")
+            
+            // 使用XiheAIEngine分析屏幕（真实AutoJs6功能）
+            val messages = aiEngine.analyzeScreenOnly()
+            
+            // 添加所有消息
+            messages.forEach { message ->
+                addMessage(message)
             }
-
-            // 分析屏幕内容
-            val analysis = withContext(Dispatchers.IO) {
-                screenAnalyzer.analyzeScreen(screenshot)
-            }
-
-            // 显示分析结果
-            val analysisMessage = ChatMessage(
-                content = """
-                    屏幕分析完成：
-                    
-                    📊 识别到的元素：
-                    ${analysis.elements.joinToString("\n") { "• ${it.description}" }}
-                    
-                    📝 识别到的文字：
-                    ${analysis.texts.joinToString("\n") { "• $it" }}
-                    
-                    你想对这些内容做什么操作呢？
-                """.trimIndent(),
-                type = MessageType.AI,
-                timestamp = Date()
-            )
-            addMessage(analysisMessage)
 
         } catch (e: Exception) {
             Timber.e(e, "屏幕分析失败")
             _errorMessage.value = "屏幕分析失败: ${e.message}"
+            
+            val errorMessage = ChatMessage(
+                content = "屏幕分析失败: ${e.message}\n\n请确保已启用无障碍服务。",
+                type = MessageType.SYSTEM,
+                timestamp = Date()
+            )
+            addMessage(errorMessage)
         } finally {
             _isLoading.value = false
         }
     }
 
     suspend fun executeScript(script: String) {
+        // 注意：新版本中脚本会在sendMessage时自动执行
+        // 这个方法保留用于手动执行已有脚本
         _isLoading.value = true
         
         try {
@@ -167,22 +131,8 @@ class ChatViewModel : ViewModel() {
             )
             addMessage(systemMessage)
 
-            // 执行脚本
-            val result = withContext(Dispatchers.IO) {
-                scriptExecutor.execute(script)
-            }
-
-            // 显示执行结果
-            val resultMessage = ChatMessage(
-                content = if (result.success) {
-                    "✅ 脚本执行成功\n\n${result.output}"
-                } else {
-                    "❌ 脚本执行失败\n\n${result.error}"
-                },
-                type = MessageType.SYSTEM,
-                timestamp = Date()
-            )
-            addMessage(resultMessage)
+            // 直接发送执行请求
+            sendMessage("执行以下脚本：\n```javascript\n$script\n```")
 
         } catch (e: Exception) {
             Timber.e(e, "脚本执行失败")
