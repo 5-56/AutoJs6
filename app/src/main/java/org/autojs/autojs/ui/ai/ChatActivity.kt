@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.autojs.autojs.R
 import org.autojs.autojs.ai.llm.NoopLlmClient
+import org.autojs.autojs.ai.llm.DeepSeekClient
+import org.autojs.autojs.ai.llm.OpenAiClient
+import org.autojs.autojs.ai.llm.Providers
 import org.autojs.autojs.ai.orchestrator.AgentOrchestrator
 import org.autojs.autojs.ai.orchestrator.DefaultToolBridge
 import org.autojs.autojs.runtime.ScriptRuntime
@@ -19,7 +22,13 @@ class ChatActivity : AppCompatActivity() {
         // Attach runtime & tools when available
         val runtime = try { org.autojs.autojs.AutoJs.instance.scriptRuntime } catch (_: Throwable) { null }
         val tools = runtime?.let { DefaultToolBridge(it) }
-        AgentOrchestrator(NoopLlmClient(), runtime, tools)
+        val cfg = Providers.read(this)
+        val llm = when (cfg.provider) {
+            "deepseek" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) DeepSeekClient(cfg.apiKey, cfg.model, cfg.baseUrl ?: "https://api.deepseek.com") else NoopLlmClient()
+            "openrouter" -> if (!cfg.apiKey.isNullOrBlank() && !cfg.model.isNullOrBlank()) OpenAiClient(cfg.baseUrl ?: "https://openrouter.ai/api", cfg.apiKey, cfg.model) else NoopLlmClient()
+            else -> NoopLlmClient()
+        }
+        AgentOrchestrator(llm, runtime, tools)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -13,7 +13,7 @@ object Providers {
 
     fun read(context: Context): Config {
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
-        val provider = sp.getString("xihe_llm_provider", "openrouter") ?: "openrouter"
+        val provider = sp.getString("xihe_llm_provider", "deepseek") ?: "deepseek"
         val apiKey = when (provider) {
             "google" -> sp.getString("xihe_llm_api_key_google", null)
             "deepseek" -> sp.getString("xihe_llm_api_key_deepseek", null)
