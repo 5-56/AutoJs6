@@ -15,6 +15,9 @@ import org.autojs.autojs.ai.orchestrator.DefaultToolBridge
 import org.autojs.autojs.runtime.ScriptRuntime
 import com.google.android.material.appbar.MaterialToolbar
 import android.view.MenuItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
     private val adapter: ChatAdapter by lazy { ChatAdapter(mutableListOf()) }
@@ -32,6 +35,12 @@ class ChatActivity : AppCompatActivity() {
             else -> NoopLlmClient()
         }
         AgentOrchestrator(llm, runtime, tools)
+    }
+
+    private fun toolsTap(x: Int, y: Int) {
+        val runtime = try { org.autojs.autojs.AutoJs.instance.scriptRuntime } catch (_: Throwable) { null } ?: return
+        val tools = DefaultToolBridge(runtime)
+        CoroutineScope(Dispatchers.IO).launch { runCatching { tools.tap(x, y) } }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,13 +112,59 @@ class ChatActivity : AppCompatActivity() {
                 orchestrator.runClosedLoopScript(
                     initialScript = "",
                     goal = goal,
-                    maxIters = 3
-                ) { update ->
-                    runOnUiThread {
-                        adapter.add(ChatAdapter.ChatMessage(false, update))
-                        rv.scrollToPosition(adapter.itemCount - 1)
+                    maxIters = 3,
+                    onUpdate = { update ->
+                        runOnUiThread {
+                            adapter.add(ChatAdapter.ChatMessage(false, update))
+                            rv.scrollToPosition(adapter.itemCount - 1)
+                        }
+                    },
+                    onCard = { payload ->
+                        runOnUiThread {
+                            if (payload.ocr.isNotEmpty()) {
+                                val lines = payload.ocr.take(10).map { b -> "${b.text} (${String.format("%.2f", b.conf)}) @ [${b.left},${b.top}]" }
+                                adapter.add(
+                                    ChatAdapter.ChatMessage(
+                                        isUser = false,
+                                        text = "OCR 识别结果",
+                                        card = ChatAdapter.ChatMessage.Card(
+                                            title = "可点击执行动作（示例：点击第一个文本框）",
+                                            lines = lines,
+                                            onClickActions = listOf({
+                                                payload.ocr.firstOrNull()?.let { box ->
+                                                    val cx = (box.left + box.right) / 2
+                                                    val cy = (box.top + box.bottom) / 2
+                                                    runCatching { toolsTap(cx, cy) }
+                                                }
+                                            })
+                                        )
+                                    )
+                                )
+                            }
+                            if (payload.a11y.isNotEmpty()) {
+                                val lines = payload.a11y.take(10).map { n -> "${n.clazz ?: "?"} | ${n.text ?: ""} | ${n.content ?: ""}" }
+                                adapter.add(
+                                    ChatAdapter.ChatMessage(
+                                        isUser = false,
+                                        text = "无障碍节点摘要",
+                                        card = ChatAdapter.ChatMessage.Card(
+                                            title = "可点击执行动作（示例：点击第一个节点中点）",
+                                            lines = lines,
+                                            onClickActions = listOf({
+                                                payload.a11y.firstOrNull()?.let { node ->
+                                                    val cx = (node.left + node.right) / 2
+                                                    val cy = (node.top + node.bottom) / 2
+                                                    runCatching { toolsTap(cx, cy) }
+                                                }
+                                            })
+                                        )
+                                    )
+                                )
+                            }
+                            rv.scrollToPosition(adapter.itemCount - 1)
+                        }
                     }
-                }
+                )
             }
             true
         }
