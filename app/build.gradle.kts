@@ -41,6 +41,9 @@ dependencies /* Unclassified */ {
     // Kotlin reflect
     implementation(kotlin("reflect"))
 
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
     // LeakCanary
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 
