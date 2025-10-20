@@ -1,0 +1,21 @@
+# 这是模板文件，请复制为 local.properties 并填写实际值
+
+# Android SDK路径（必需 - 根据你的实际安装路径修改）
+# Windows示例: C\:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
+# macOS示例: /Users/YourName/Library/Android/sdk
+# Linux示例: /home/YourName/Android/Sdk
+sdk.dir=/path/to/your/android/sdk
+
+# AI API配置（必需）
+# 支持OpenAI API或兼容的API服务
+# 获取API密钥: https://platform.openai.com/api-keys
+ai.api.key=YOUR_API_KEY_HERE
+ai.api.url=https://api.openai.com/v1/chat/completions
+
+# 常见AI API配置示例:
+# OpenAI:
+#   ai.api.url=https://api.openai.com/v1/chat/completions
+# Azure OpenAI:
+#   ai.api.url=https://YOUR-RESOURCE-NAME.openai.azure.com/openai/deployments/YOUR-DEPLOYMENT-NAME/chat/completions?api-version=2023-05-15
+# 其他兼容服务:
+#   ai.api.url=YOUR_COMPATIBLE_API_URL
