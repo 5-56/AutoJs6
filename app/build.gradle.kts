@@ -19,6 +19,7 @@ val versions = Versions("$rootDir/version.properties")
 val dimention = "channel"
 val flavorNameApp = "app"
 val flavorNameInrt = "inrt"
+val flavorNameXihe = "xihe"
 val buildTypeDebug = "debug"
 val buildTypeRelease = "release"
 val buildActionAssemble = "assemble"
@@ -36,6 +37,9 @@ dependencies /* Unclassified */ {
 
     // Kotlin reflect
     implementation(kotlin("reflect"))
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // LeakCanary
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
@@ -546,6 +550,33 @@ android {
             })
         }
 
+        // New flavor for AI-first app variant: "羲和"
+        create(flavorNameXihe) {
+            dimension = dimention
+            applicationIdSuffix = ".${flavorNameXihe}"
+            minSdk = versions.sdkVersionMin
+            targetSdk = versions.sdkVersionTarget
+            compileSdk = versions.sdkVersionCompile
+            versionCode = versions.appVersionCode
+            versionName = versions.appVersionName
+
+            buildConfigField("String", "CHANNEL", "\"$flavorNameXihe\"")
+            buildConfigField("boolean", "is${flavorNameInrt.uppercaseFirstChar()}", "false")
+
+            manifestPlaceholders.putAll(
+                mapOf(
+                    "CHANNEL" to flavorNameXihe,
+                    // Use literal app label for xihe
+                    "appName" to "羲和",
+                    // We'll add a xihe-specific launcher in manifest overlay
+                    "intentCategory" to "android.intent.category.DEFAULT",
+                    "intentCategoryInrt" to "android.intent.category.DEFAULT",
+                    "authorities" to "org.autojs.autojs6.${flavorNameXihe}.fileprovider",
+                    "icon" to "@mipmap/ic_launcher",
+                )
+            )
+        }
+
         androidResources {
             if (gradle.startParameter.taskNames.any { it.contains(Regex("^(:?$flavorNameApp:)?$buildActionAssemble")) }) {
                 ignoreAssetsPatterns.addAll(listOf(".idea", "declarations", "sample/declarations"))
@@ -590,6 +621,11 @@ android {
         }
         getByName(flavorNameInrt) {
             assets.srcDirs("src/main/assets-$flavorNameInrt")
+        }
+
+        getByName(flavorNameXihe) {
+            // Reuse main app assets for xihe initially
+            assets.srcDirs("src/main/assets-$flavorNameApp")
         }
 
     }

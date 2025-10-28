@@ -36,6 +36,7 @@ import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.util.ViewUtils
 import org.autojs.autojs6.BuildConfig
 import org.autojs.autojs6.R
+import org.autojs.autojs.agent.AgentManager
 import org.greenrobot.eventbus.EventBus
 import java.lang.ref.WeakReference
 import java.lang.reflect.Method
@@ -50,6 +51,9 @@ class App : MultiDexApplication() {
         private set
 
     lateinit var devPluginService: DevPluginService
+        private set
+
+    lateinit var agentManager: AgentManager
         private set
 
     override fun onCreate() {
@@ -69,6 +73,9 @@ class App : MultiDexApplication() {
         TimedTaskScheduler.init(this)
         initDynamicBroadcastReceivers()
         Toaster.init(this)
+
+        // 初始化Agent系统
+        initAgentSystem()
 
         setUpDefaultNightMode()
     }
@@ -102,6 +109,11 @@ class App : MultiDexApplication() {
 
     private fun setUpLeakCanary() {
         LeakCanarySetup.setup(this)
+    }
+
+    private fun initAgentSystem() {
+        agentManager = AgentManager.getInstance(this)
+        agentManager.initialize()
     }
 
     private fun setUpDefaultNightMode() {

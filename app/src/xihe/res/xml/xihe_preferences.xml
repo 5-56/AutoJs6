@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="xihe_llm_provider"
+        android:title="AI 提供商"
+        android:entries="@array/xihe_llm_providers"
+        android:entryValues="@array/xihe_llm_provider_values"
+        android:useSimpleSummaryProvider="true" />
+
+    <!-- API Keys per provider -->
+    <EditTextPreference
+        android:key="xihe_llm_api_key_google"
+        android:title="Google API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="Google API Key" />
+
+    <EditTextPreference
+        android:key="xihe_llm_api_key_deepseek"
+        android:title="DeepSeek API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="DeepSeek API Key" />
+
+    <EditTextPreference
+        android:key="xihe_llm_api_key_kimi"
+        android:title="Kimi API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="Kimi API Key" />
+
+    <EditTextPreference
+        android:key="xihe_llm_api_key_openrouter"
+        android:title="OpenRouter API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="OpenRouter API Key" />
+
+    <EditTextPreference
+        android:key="xihe_llm_api_key_zhipu"
+        android:title="智谱 API Key"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="智谱 API Key" />
+
+    <!-- Dynamic model list fetched per provider -->
+    <ListPreference
+        android:key="xihe_llm_model"
+        android:title="模型"
+        android:useSimpleSummaryProvider="true"
+        android:dialogTitle="选择模型" />
+</PreferenceScreen>

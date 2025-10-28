@@ -214,11 +214,8 @@
             android:theme="@style/AppTheme.Splash"
             tools:ignore="RedundantLabel">
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="${intentCategory}" />
-
             </intent-filter>
 
             <meta-data
@@ -226,11 +223,18 @@
                 android:resource="@xml/app_shortcuts" />
         </activity>
 
+        
+
         <activity
             android:name="org.autojs.autojs.ui.main.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.FullScreen" />
+
+        <activity
+            android:name="org.autojs.autojs.ui.ai.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.Settings" />
 
         <activity
             android:name="org.autojs.autojs.ui.main.scripts.DisplayManifestActivity"
