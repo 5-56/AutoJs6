@@ -1,0 +1,16 @@
+注意: ic_launcher.png 和 ic_launcher_round.png 需要使用真实的PNG图标文件。
+
+你可以：
+1. 使用Android Studio的 Image Asset 工具生成（推荐）
+   - 右键点击 res 文件夹
+   - New > Image Asset
+   - 选择 Launcher Icons
+   - 设计你的图标
+
+2. 或者暂时使用默认图标（应用可以正常运行）
+
+3. 或者从以下网站下载免费图标：
+   - https://material.io/resources/icons/
+   - https://www.flaticon.com/
+   
+建议图标尺寸：144x144 像素（xxhdpi）

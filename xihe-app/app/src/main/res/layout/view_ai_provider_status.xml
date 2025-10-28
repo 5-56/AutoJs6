@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <!-- AI图标 -->
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_ai"
+        android:tint="?attr/colorPrimary"
+        android:layout_marginEnd="12dp"/>
+
+    <!-- 提供商信息 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/provider_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AI提供商"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/model_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="点击配置"
+            android:textSize="14sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:layout_marginTop="2dp"/>
+
+    </LinearLayout>
+
+    <!-- 状态 -->
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="未配置"
+        android:textSize="12sp"
+        android:layout_marginStart="8dp"/>
+
+    <!-- 箭头 -->
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_settings"
+        android:tint="?android:attr/textColorSecondary"
+        android:layout_marginStart="8dp"/>
+
+</LinearLayout>

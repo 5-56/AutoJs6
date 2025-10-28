@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📝 脚本模板"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 分类选择 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择分类："
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Spinner
+        android:id="@+id/category_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 模板列表 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择模板："
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"/>
+
+    <ListView
+        android:id="@+id/templates_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:divider="?android:attr/listDivider"
+        android:dividerHeight="1dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- 描述 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="描述："
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/description_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点击模板查看描述"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:padding="8dp"
+        android:background="?attr/colorSurfaceVariant"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 提示 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💡 选择模板后会插入到输入框，你可以修改后使用"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorTertiary"
+        android:padding="8dp"/>
+
+</LinearLayout>

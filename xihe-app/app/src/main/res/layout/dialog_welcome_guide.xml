@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- 图标 -->
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_ai"
+        android:tint="?attr/colorPrimary"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 标题 -->
+    <TextView
+        android:id="@+id/welcome_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="👋 欢迎使用羲和"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- 消息 -->
+    <TextView
+        android:id="@+id/welcome_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="欢迎消息"
+        android:textSize="16sp"
+        android:lineSpacingMultiplier="1.3"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- 配置AI按钮 -->
+    <Button
+        android:id="@+id/config_ai_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="立即配置AI"
+        android:textAllCaps="false"
+        style="@style/Widget.Material3.Button"/>
+
+    <!-- 跳过按钮 -->
+    <Button
+        android:id="@+id/skip_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="稍后配置"
+        android:textAllCaps="false"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Material3.Button.TextButton"/>
+
+</LinearLayout>
